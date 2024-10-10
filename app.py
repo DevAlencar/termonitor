@@ -1,4 +1,5 @@
 import time
+from random import random
 
 import numpy as np
 import streamlit as st
@@ -19,10 +20,11 @@ def main():
 
     alt.themes.enable("dark")
 
-    data = get_data()
+    test = random()
 
-    chart = st.line_chart(pd.DataFrame(data, columns=['Humidity']))
+    data = [] #get_data()
 
+    chart = st.line_chart(pd.DataFrame(data, columns=['Object Temperature']))
 
     def temp_chart():
         new_data = pd.DataFrame(data, columns=['Object Temperature'])
@@ -30,21 +32,16 @@ def main():
 
     placeholder = st.empty()
 
-    def temp():
+    def temp_metric():
         with placeholder.container():
             try:
                 val = data.pop()
-                st.metric(label="Temperature", value=f"{val}")
+                st.metric(label="Object Temperature", value=f"{'{:.2f}'.format(val) + ' °C  '}")
             except IndexError:
                 pass
 
-
     with st.sidebar:
         st.title('🌡️Termonitor')
-
-        mode_list = ["Humidity", "Ambient Temperature", "Object Temperature", "All"]
-
-        selected_mode = st.selectbox('Select a mode', mode_list, index=len(mode_list) - 1)
 
         year_list = [1900, 1901, 1902, 1903, 1904, 1905, 1906, 1907]
 
@@ -60,14 +57,19 @@ def main():
 
         real_time_check = st.checkbox("RTM", )
 
-
     if real_time_check:
-        connect_mqtt()
+        #connect_mqtt()
         while real_time_check:
             temp_chart()
-            temp()
-            data.clear()
+            temp_metric()
+            teste = random() #get_data()
+            data.append(teste)
             time.sleep(1)
+    else:
+        #todo funcao de requisição de dados
+        #data = data_res(selected_year, selected_month, selected_day)
+        #temp_chart()
+        pass
 
 
 if __name__ == '__main__':
