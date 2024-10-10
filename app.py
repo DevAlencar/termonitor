@@ -21,19 +21,22 @@ def main():
 
     data = get_data()
 
-    chart = st.line_chart(data)
-    chart2 = st.line_chart(pd.DataFrame(data, columns=['Humidity']))
+    chart = st.line_chart(pd.DataFrame(data, columns=['Humidity']))
 
 
     def temp_chart():
-        new_data = pd.DataFrame(np.random.randn(1, 2), columns=['Object Temperature', 'Ambient Temperature'])
+        new_data = pd.DataFrame(data, columns=['Object Temperature'])
         chart.add_rows(new_data)
 
+    placeholder = st.empty()
 
-    def humidity_chart():
-        new_data = pd.DataFrame(data, columns=['Object Temperature'])
-        chart2.add_rows(new_data)
-        data.clear()
+    def temp():
+        with placeholder.container():
+            try:
+                val = data.pop()
+                st.metric(label="Temperature", value=f"{val}")
+            except IndexError:
+                pass
 
 
     with st.sidebar:
@@ -61,7 +64,9 @@ def main():
     if real_time_check:
         connect_mqtt()
         while real_time_check:
-            humidity_chart()
+            temp_chart()
+            temp()
+            data.clear()
             time.sleep(1)
 
 
