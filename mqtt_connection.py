@@ -10,7 +10,7 @@ def on_connect(client, userdata, flags, reason_code, properties):
 
 def on_message(client, userdata, msg):
     try:
-        data.append([float(x) for x in msg.payload().decode("utf-8").strip().split()])
+        data.append([float(x) for x in msg.payload.decode("utf-8").strip().split()])
         print(data)
     except ValueError:
         print("ERROR")

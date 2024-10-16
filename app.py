@@ -24,10 +24,15 @@ def main():
 
     chart = st.line_chart(pd.DataFrame({'Environment Temperature' : [], 'Object Temperature' : []}))
 
+    warning = st.empty()
+
     def temp_chart():
         if len(data) != 0:
             new_data = pd.DataFrame({'Environment Temperature' : [data[0][0]], 'Object Temperature' : [data[0][1]]})
             chart.add_rows(new_data)
+        else:
+            with warning.container():
+                st.warning("Conexão instável ou nula")
 
 
     col1, col2 = st.columns(2)
