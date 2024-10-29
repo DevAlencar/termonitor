@@ -6,6 +6,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import paho.mqtt.client as mqtt
+import requests
 
 from handlers import days_in_month
 from mqtt_connection import get_data, connect_mqtt
@@ -58,20 +59,31 @@ def main():
             except IndexError:
                 pass
 
+
+    def get_data_static():
+        response = requests.get(url, params=params)
+
+        if response.status_code == 200:
+            return response.json()  # Converte a resposta JSON em um dicionário Python
+        else:
+            print("Erro ao fazer a requisição:", response.status_code, response.text)
+            exit()
+
+
     with st.sidebar:
         st.title('🌡️Termonitor')
 
-        # year_list = [1900, 1901, 1902, 1903, 1904, 1905, 1906, 1907]
-        #
-        # selected_year = st.selectbox('Select a year', year_list, index=len(year_list) - 1)
-        #
-        # month_list = list(range(1,13))
-        #
-        # selected_month = st.selectbox('Select a month', month_list, index=len(month_list) - 1)
-        #
-        # day_list = list(range(1, days_in_month(selected_month, selected_year)))
-        #
-        # selected_day = st.selectbox('Select a day', day_list)
+        year_list = [2024]
+
+        selected_year = st.selectbox('Select a year', year_list, index=len(year_list) - 1)
+
+        month_list = list(range(1,13))
+
+        selected_month = st.selectbox('Select a month', month_list, index=len(month_list) - 1)
+
+        day_list = list(range(1, days_in_month(selected_month, selected_year)))
+
+        selected_day = st.selectbox('Select a day', day_list)
 
         real_time_check = st.checkbox("RTM", )
 
@@ -85,8 +97,16 @@ def main():
             data = get_data()
             time.sleep(1)
     else:
-        #todo funcao de requisição de dados
-        pass
+        url = 'http://localhost:8080'
+        data.clear()
+        params = {
+            'param1': str(selected_day).zfill(2),  # Dia
+            'param2': str(selected_month).zfill(2),  # Mês
+            'param3': selected_year  # Ano
+        }
+        data = get_data_static()['data']
+        print(data)
+        temp_chart()
 
 
 if __name__ == '__main__':
