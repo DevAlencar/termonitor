@@ -105,8 +105,8 @@ def main():
             'param3': selected_year  # Ano
         }
         data = get_data_static()['data']
-        print(data)
-        temp_chart()
+        chart.empty()
+        st.line_chart(pd.DataFrame(data, columns=['Environment Temperature', 'Object Temperature']))
 
 
 if __name__ == '__main__':
