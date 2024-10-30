@@ -9,7 +9,7 @@ import paho.mqtt.client as mqtt
 import requests
 
 from handlers import days_in_month
-from mqtt_connection import get_data, connect_mqtt
+from mqtt_connection import get_data, connect_mqtt, clear_data
 
 
 def main():
@@ -95,6 +95,7 @@ def main():
             temp_metric()
             data.clear()
             data = get_data()
+            clear_data()
             time.sleep(1)
     else:
         url = 'http://localhost:8080'
@@ -106,7 +107,11 @@ def main():
         }
         data = get_data_static()['data']
         chart.empty()
-        st.line_chart(pd.DataFrame(data, columns=['Environment Temperature', 'Object Temperature']))
+        if len(data) == 0:
+            with warning.container():
+                st.warning("Nenhum dado encontrado nesta data")
+        else:
+            st.line_chart(pd.DataFrame(data, columns=['Environment Temperature', 'Object Temperature']))
 
 
 if __name__ == '__main__':
